@@ -1,6 +1,7 @@
 !(register-module! ../../../hyperon-openpsi)
 !(import! &self utils) 
 !(import! &self hyperon-openpsi:main:feed-back-loop:feed-back-loop)
+!(import! &self hyperon-openpsi:main:feed-back-loop:feed-back-loop-v2)
 
 ;; TODO: move this to a test file . 
 !(bind! &RS (new-space))
@@ -124,7 +125,7 @@
 !(populateRuleSpace_)
 ; !(get-atoms &RS)
 
-(= (loop) 
+(= (loop $version) 
    (let* (
         ($userInput (pyModule getUserInput ()))
         ($response (pyModule generateResponse ($userInput)))
@@ -135,14 +136,14 @@
         (((: $handle ($tv (IMPLICATION_LINK (AND_LINK ((Goal $context $x_0 $y_0) $action)) $goal))) $wght) $rule )
         (() (println! (selected Context --> (get-metatype $context) $context)))
        
-        ($emotion (psi-agent-loop $context &RS ))
+        ($emotion (if (== $version 1) (psi-agent-loop $context &RS) (psi-loop-v2 $context &RS)))
         (() (println! (selected Emotion --> $emotion)))
         ; ($res (pyModule generateResponse ($emotion)))
       )
       (
         if(== $userInput "exit")
           ()
-          (loop)
+          (loop $version)
       )
       ; $ruleExp
     )
@@ -159,7 +160,7 @@
      )
    )
 
-!(loop)
+!(loop 1)
 
 ;; TODO:
 ;; - Poplulate demand and modulator spaces .
